@@ -18,8 +18,8 @@ const urlShortsSchema = new mongoose.Schema({
   },
   shortUrl: {
     type: Number,
-    required: true,
     unique: true,
+    default: 0,
   }
 });
 
@@ -32,7 +32,8 @@ urlShortsSchema.pre('save', function(next) {
       .limit(1)
       .exec((err, doc) => {
           if (err) return next(err);
-          this.shortUrl = doc[0].shortUrl + 1
+          if (doc.length === 0) return this.shortUrl = 0;
+          this.shortUrl = doc[0].shortUrl + 1;
       })
     next();
 });
