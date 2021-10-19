@@ -35,7 +35,7 @@ const postNewUrl = (req, res, url_input) => {
       const shortUrl = (doc.length === 0) ? 0 : doc[0].shortUrl + 1;
       UrlShorts.create({longUrl: url_input, shortUrl}, (err, doc) => {
         if (err) return res.json({status: 'failed to create', error: err});
-        res.json({orignal_url: url_input, short_url: doc.shortUrl});
+        res.json({original_url: url_input, short_url: doc.shortUrl});
       });    
     })
   })
