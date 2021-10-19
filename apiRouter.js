@@ -6,6 +6,8 @@ const url = require('url');
 
 apiRouter.post('/shorturl', (req, res) => {
   const url_input = req.body.url;
+  const urlRegex = new RegExp(/(?<=(http|https):\/\/)[^\/]+/)
+  if(!url_input.match(urlRegex)) return res.json({error: 'Invalid URL'});
   try { 
     const url_string = new URL(url_input);
     lookup(url_string.hostname, (err, _, __) => {
