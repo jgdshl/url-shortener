@@ -1,9 +1,24 @@
 const express = require('express');
 const apiRouter = express.Router();
-const {UrlShorts} = require('./model')
+const {UrlShorts} = require('./model');
+const {lookup} = require('dns');
+const url = require('url');
 
 apiRouter.post('/shorturl', (req, res) => {
   const url_input = req.body.url;
+  try { 
+    const url_string = new URL(url_input);
+    lookup(url_string.hostname, (err, _, __) => {
+      if (err) return res.json({error: 'invalid url'});
+      postNewUrl(req, res, url_input);
+    })
+  }
+  catch (err) {
+    return res.json({error: 'invalid url'});
+  }
+});
+
+const postNewUrl = (req, res, url_input) => {
   UrlShorts.find({longUrl: url_input}, (err, doc) => {
     if (err) return res.status(400).json({status: 'failed to find', error: err});
     if (doc.length > 0) {
@@ -24,7 +39,7 @@ apiRouter.post('/shorturl', (req, res) => {
       });    
     })
   })
-}); 
+}; 
 
 apiRouter.get('/shorturl/:num', (req, res) => {
   UrlShorts.findOne({shortUrl: req.params.num}, (err, doc) => {
